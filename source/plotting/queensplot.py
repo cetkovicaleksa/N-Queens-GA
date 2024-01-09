@@ -21,6 +21,8 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 from matplotlib.figure import Figure
 from matplotlib.axis import Axis
+import matplotlib.patches as patches
+from matplotlib.offsetbox import AnnotationBbox, OffsetImage
 import matplotlib.image as mpimg
 from typing import Generator, Sequence, Iterable, Any
 
@@ -29,7 +31,7 @@ from typing import Generator, Sequence, Iterable, Any
 
 
 
-def checkered_with_shape(shape: Sequence[int] = (8, 8)) -> np.ndarray[Any, int]: # TODO: recheck type hints
+def checkered_with_shape(shape: Sequence[int] = (8, 8)) -> npt.NDArray[np.int_]: # TODO: recheck type hints
     """
     Generate a checkered board pattern of ones and zeroes.
 
@@ -116,27 +118,61 @@ def chess_column_labels(n: int) -> Generator[str, None, None]:
     yield from map(lambda i: chr(ord('A') + i), range(n))
 
 
+queen_coords = [
+    (0, 0), (1, 0), (1, 3), (0.5, 4), (0, 3),  # Crown
+    (0, 7), (1, 7), (1, 4), (0.5, 3), (0, 4),  # Body
+    (-1, 4), (2, 4), (2, 3.5), (-1, 3.5)  # Base
+]
 
-def plot_n_queens(solution: npt.ArrayLike) -> None:
+
+
+def plot_n_queens(
+          solution: npt.ArrayLike, 
+          separate_figure: bool = False,
+          black: str = '#779954', 
+          white: str = '#E9EDCC',
+          label_color: str = '#8B4513',
+          label_font_family: str = 'Times New Roman',
+          show_row_labels: bool = True, 
+          show_col_labels: bool = True, 
+        ) -> None:
+        """
+        ...
+        """
+        nrows, ncols = solution.shape
 
         fig: Figure; ax: Axis
-        fig, ax = plt.subplots()        
+        fig, ax = plt.subplots()      
 
-        _plot_board(*solution.shape)
+        image = plt.matshow(checkered_with_shape(solution.shape), cmap=ListedColormap([black, white]), fignum=0)
+        
+        ax.set_xticks(range(ncols))
+        ax.set_xticklabels(chess_column_labels(ncols))
+        # ax.tick_params(labelcolor=label_color, labelfontfamily=label_font_family)
 
-        for coord in zip(*np.where(solution)):
-             ax.add_patch(plt.Circle(coord, 0.4, color='purple'))
+        ax.set_yticks(range(nrows))
+        ax.set_yticklabels(chess_row_labels(nrows))
+        ax.invert_yaxis()
 
-        fig.tight_layout()
+        # coord is coordinates where solution matrix evaluates to True
+        for coord in zip(*np.where(solution)): 
+            ax.add_patch(patches.Circle(coord, 0.2, color='purple'))
+
+
+        plt.tight_layout()
         plt.show()
-        plt.close(fig)
+
+        if separate_figure: 
+            plt.close(fig)
 
 
 def _plot_board(n: int, m: int) -> None:
     
     plt.matshow(checkered_with_shape([n, m]), fignum=0, cmap='copper')
     plt.xticks(range(m), chess_column_labels(m))
-    plt.yticks(range(n-1, -1, -1), chess_row_labels(n))
+    plt.yticks(range(n), chess_row_labels(n))
+    plt.gca().invert_yaxis() # because mathshow indexes matrix from top left and we are indexing from bottom left
+    
      
 
     
@@ -146,10 +182,9 @@ def _plot_board(n: int, m: int) -> None:
 
 
 
-
-def plot_queen(row, col):
-    svg = mpimg.imread('Chess_qdt45.svg')
-    plt.imshow(svg) #extent=[x, x + width, y, y + height])
+def queen_patch(row, col) -> any:
+    queen_icon = '♕'
+    return AnnotationBbox(OffsetImage(queen_icon), (row, col), fameon=False)
 
 
 
@@ -189,8 +224,10 @@ if __name__ == "__main__":
     
     print(''.center(80, '='))
 
-    plot_n_queens(np.array([[0, 1, 0, 1],
-                            [1, 0, 0, 0],
-                            [0, 0, True, 0]]))
+    plot_n_queens(np.eye(8))
 
-    print(type(checkered_with_shape([1, 2])))
+    # print(type(checkered_with_shape([1, 2])))
+
+    
+
+    # plot_queen(1, 1)
