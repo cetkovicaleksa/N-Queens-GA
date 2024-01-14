@@ -7,7 +7,7 @@ Utilizes NumPy and Matplotlib for plotting.
 
 """
 
-__all__ = ['checkered_with_shape', 'chess_column_labels', 'chess_row_labels', ...] # TODO
+__all__ = ['checkered_with_shape', 'chess_column_labels', 'chess_row_labels', 'plot_n_queens'] # TODO
 __author__ = 'Алекса Ћетковић'
 __date__ = '5. I 2024.'
 __version__ = '1.0'
