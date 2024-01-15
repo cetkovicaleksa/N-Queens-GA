@@ -9,7 +9,7 @@ __date__ = '13. I 2024.'
 
 from itertools import count
 import numpy as np
-from typing import Any, Sequence, Iterable
+from typing import Sequence, Iterable
 
 
 
