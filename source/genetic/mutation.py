@@ -23,7 +23,7 @@ def mutation(
         operator: Callable[[List[int]], None] = swap_mutation
     ):
     """
-    Preform in place mutation on the given population with the given mutation_rate.
+    Preform in place mutation on the given population with the given mutation_rate and operator.
     """
 
     for i in np.arange(len(population)):
